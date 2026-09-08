@@ -1,0 +1,84 @@
+{
+  "name": "peeper-vscode",
+  "displayName": "Peeper Language Support",
+  "description": "Peeper language support for VS Code: syntax highlighting, hover, go to definition, completion, rename and diagnostics via the Peeper language server.",
+  "version": "0.0.1",
+  "publisher": "PeeperLanguage",
+  "license": "SEE LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeeperLanguage/peeper-vscode"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:peeper"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "peeper",
+        "aliases": [
+          "Peeper",
+          "peeper"
+        ],
+        "extensions": [
+          ".peep"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "peeper",
+        "scopeName": "source.peeper",
+        "path": "./syntaxes/peeper.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Peeper",
+      "properties": {
+        "peeper.server.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the `peeper` binary. Leave empty to use `peeper` from PATH.",
+          "scope": "machine-overridable"
+        },
+        "peeper.server.trace": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Tracing of communication between VS Code and the Peeper language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc --noEmit -p ./ && esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
+    "watch": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --sourcemap --watch",
+    "test:grammar": "node tm-test.mjs",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@esbuild/linux-x64": "^0.28.2",
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.80.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.4.0",
+    "vscode-oniguruma-wasm": "^1.1.0",
+    "vscode-textmate": "^9.3.2"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

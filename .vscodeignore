@@ -1,0 +1,8 @@
+src/**
+node_modules/**
+.vscode/**
+tsconfig.json
+npm-debug.log
+**/*.map
+**/*.ts
+tm-test.mjs

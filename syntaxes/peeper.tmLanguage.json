@@ -1,0 +1,166 @@
+{
+  "scopeName": "source.peeper",
+  "name": "Peeper",
+  "patterns": [
+    { "include": "#doc_comment" },
+    { "include": "#line_comment" },
+    { "include": "#block_comment" },
+    { "include": "#attribute" },
+    { "include": "#string" },
+    { "include": "#char" },
+    { "include": "#number" },
+    { "include": "#constants" },
+    { "include": "#type_declaration" },
+    { "include": "#function_declaration" },
+    { "include": "#keywords" },
+    { "include": "#struct_literal_type" },
+    { "include": "#builtin_types" },
+    { "include": "#function_call" },
+    { "include": "#scoped_identifier" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "doc_comment": {
+      "match": "///.*$",
+      "name": "comment.line.documentation.peeper"
+    },
+    "line_comment": {
+      "match": "//.*$",
+      "name": "comment.line.double-slash.peeper"
+    },
+    "block_comment": {
+      "begin": "/\\*",
+      "end": "\\*/",
+      "name": "comment.block.peeper"
+    },
+    "attribute": {
+      "match": "#\\s*([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "entity.other.attribute-name.peeper" }
+      },
+      "name": "meta.attribute.peeper"
+    },
+    "string": {
+      "patterns": [
+        {
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.peeper",
+          "patterns": [
+            { "include": "#string_escapes" }
+          ]
+        },
+        {
+          "begin": "c\"",
+          "end": "\"",
+          "name": "string.quoted.double.c.peeper",
+          "patterns": [
+            { "include": "#string_escapes" }
+          ]
+        }
+      ]
+    },
+    "string_escapes": {
+      "match": "\\\\[nrt\\\\\"'0]|\\\\x[0-9A-Fa-f]{2}|\\\\u\\{[0-9A-Fa-f]+\\}",
+      "name": "constant.character.escape.peeper"
+    },
+    "char": {
+      "match": "(b?)'([^'\\\\]|\\\\.)'",
+      "name": "constant.character.peeper"
+    },
+    "number": {
+      "patterns": [
+        {
+          "match": "\\b0[xX][0-9A-Fa-f](?:[0-9A-Fa-f_])*(?:[iuf](?:[0-9_]+)?)?\\b",
+          "name": "constant.numeric.hex.peeper"
+        },
+        {
+          "match": "\\b0[oO][0-7](?:[0-7_])*(?:[iuf](?:[0-9_]+)?)?\\b",
+          "name": "constant.numeric.oct.peeper"
+        },
+        {
+          "match": "\\b0[bB][01](?:[01_])*(?:[iuf](?:[0-9_]+)?)?\\b",
+          "name": "constant.numeric.bin.peeper"
+        },
+        {
+          "match": "\\b[0-9](?:[0-9_])*(?:\\.[0-9](?:[0-9_])*)?(?:[eE][+-]?[0-9](?:[0-9_])*)?(?:[iuf](?:[0-9_]+)?)?\\b",
+          "name": "constant.numeric.dec.peeper"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "match": "\\b(import|type|fn|struct|enum|union|error|if|else|match|for|break|continue|return|catch|as|defer|panic|unsafe|const|let|mut|in|is|with|comptime|move|iface|from)\\b",
+          "name": "keyword.control.peeper"
+        },
+        {
+          "match": "\\b(self)\\b",
+          "name": "variable.language.self.peeper"
+        }
+      ]
+    },
+    "builtin_types": {
+      "match": "\\b(bool|char|string|str|Self|map|u8|u16|u32|u64|usize|i8|i16|i32|i64|isize|f32|f64|void)\\b",
+      "name": "support.type.builtin.peeper"
+    },
+    "constants": {
+      "match": "\\b(true|false|none)\\b",
+      "name": "constant.language.peeper"
+    },
+    "type_declaration": {
+      "match": "\\b(struct|enum|union|error|iface|type)\\s+([A-Z][A-Za-z0-9_]*)\\b",
+      "captures": {
+        "1": { "name": "keyword.control.peeper" },
+        "2": { "name": "entity.name.type.peeper" }
+      }
+    },
+    "function_declaration": {
+      "match": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
+      "captures": {
+        "1": { "name": "keyword.control.peeper" },
+        "2": { "name": "entity.name.function.peeper" }
+      }
+    },
+    "struct_literal_type": {
+      "match": "(?<![\\w.])\\b([A-Za-z_][A-Za-z0-9_]*(?:\\s*(?<generic><(?:[^<>\\n]|\\g<generic>)*>))?(?:\\s*::\\s*[A-Za-z_][A-Za-z0-9_]*(?:\\s*\\g<generic>)?)*)(?=\\s*\\.\\s*\\{)",
+      "captures": {
+        "1": {
+          "patterns": [
+            { "include": "#builtin_types" },
+            { "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b", "name": "entity.name.type.peeper" },
+            { "include": "#operators" },
+            { "include": "#punctuation" }
+          ]
+        }
+      }
+    },
+    "function_call": {
+      "match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+      "name": "entity.name.function.call.peeper"
+    },
+    "scoped_identifier": {
+      "match": "\\b([A-Z][A-Za-z0-9_]*)::",
+      "captures": {
+        "1": { "name": "entity.name.type.peeper" }
+      }
+    },
+    "operators": {
+      "match": "\\+=|-=|\\*=|/=|%=|==|!=|<=|>=|&&|\\|\\||\\|>|::|\\.\\.\\.?=?|=>|[=!\\?@&+\\-*/%<>]",
+      "name": "keyword.operator.peeper"
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "match": "[{}()\\[\\]]",
+          "name": "punctuation.bracket.peeper"
+        },
+        {
+          "match": "[,;:.]",
+          "name": "punctuation.delimiter.peeper"
+        }
+      ]
+    }
+  }
+}
