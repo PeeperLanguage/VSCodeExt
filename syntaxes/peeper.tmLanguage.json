@@ -92,7 +92,7 @@
     "keywords": {
       "patterns": [
         {
-          "match": "\\b(import|type|fn|struct|enum|union|error|if|else|match|for|break|continue|return|catch|as|defer|panic|unsafe|const|let|mut|in|is|with|comptime|move|iface|from)\\b",
+          "match": "\\b(import|type|fn|struct|enum|union|error|if|else|match|for|break|continue|return|catch|orelse|as|defer|panic|unsafe|const|let|mut|in|is|with|comptime|move|iface|from)\\b",
           "name": "keyword.control.peeper"
         },
         {

@@ -46,6 +46,11 @@ const cases = [
   ['/* Box<i32>.{} */', [['Box', 'comment.block.peeper']]],
   ['struct Point { x: i32 }', [['Point', type], ['struct', 'keyword.control.peeper'], ['i32', builtin]]],
   ['fn main() { call() }', [['main', 'entity.name.function.peeper'], ['call', 'entity.name.function.call.peeper']]],
+  ['let count = maybe orelse 0;', [['let', 'keyword.control.peeper'], ['orelse', 'keyword.control.peeper'], ['maybe', 'source.peeper']]],
+  ['Slot::Value with none => {}', [['Slot', type], ['with', 'keyword.control.peeper'], ['none', 'constant.language.peeper'], ['=>', operator]]],
+  ['Slot::Inner with .{ radius, scale as factor } => {}', [['with', 'keyword.control.peeper'], ['as', 'keyword.control.peeper'], ['radius', 'source.peeper'], ['factor', 'source.peeper']]],
+  ['let .{ first as head, _ } = pair;', [['let', 'keyword.control.peeper'], ['as', 'keyword.control.peeper'], ['head', 'source.peeper']]],
+  ['if &shape is Shape::Circle { }', [['is', 'keyword.control.peeper'], ['Shape', type], ['&', operator]]],
 ];
 for (const [line, checks] of cases) {
   const { tokens } = grammar.tokenizeLine(line, tm.INITIAL);
