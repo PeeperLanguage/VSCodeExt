@@ -21,6 +21,7 @@ const delimiter = 'punctuation.delimiter.peeper';
 const bracket = 'punctuation.bracket.peeper';
 const operator = 'keyword.operator.peeper';
 const cases = [
+  ['fn f(p: rawptr i32) -> rawptr cstr {}', [['rawptr', builtin], ['i32', builtin], ['cstr', builtin]]],
   ['Point.{ x = 1 }', [['Point', type], ['.', delimiter], ['{', bracket], ['=', operator]]],
   ['Box<i32>.{ value = 1 }', [['Box', type], ['i32', builtin], ['<', operator], ['>', operator]]],
   ['pkg::Point.{}', [['pkg', type], ['Point', type], ['::', operator]]],
