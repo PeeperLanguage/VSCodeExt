@@ -10,8 +10,11 @@
     { "include": "#char" },
     { "include": "#number" },
     { "include": "#constants" },
+    { "include": "#type_alias" },
     { "include": "#type_declaration" },
     { "include": "#function_declaration" },
+    { "include": "#type_annotation" },
+    { "include": "#array_literal_type" },
     { "include": "#keywords" },
     { "include": "#struct_literal_type" },
     { "include": "#builtin_types" },
@@ -103,14 +106,64 @@
     },
     "builtin_types": {
       "match": "\\b(bool|char|string|str|cstr|rawptr|Self|map|u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64|void)\\b",
-      "name": "support.type.builtin.peeper"
+      "name": "support.type.primitive.peeper"
     },
     "constants": {
       "match": "\\b(true|false|none)\\b",
       "name": "constant.language.peeper"
     },
+    "type_alias": {
+      "match": "\\b(type)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*(=)\\s*((?:&\\s*(?:mut\\b\\s*)?|\\*\\s*|\\[[^\\]\\n]*\\]\\s*)*)((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.control.peeper" },
+        "2": { "name": "entity.name.type.peeper" },
+        "3": { "name": "keyword.operator.peeper" },
+        "4": { "patterns": [{ "include": "#type_prefix" }] },
+        "5": { "patterns": [{ "include": "#type_path" }] },
+        "6": { "patterns": [{ "include": "#type_name" }] }
+      }
+    },
+    "type_annotation": {
+      "match": "(?:(?<![\\w.+\\-*/%&|^<>=!])(?<![.+\\-*/%&|^<>=!]\\s)(?<!\\bas\\s)([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)|(->))\\s*((?:&\\s*(?:mut\\b\\s*)?|\\*\\s*|\\[[^\\]\\n]*\\]\\s*)*)((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "patterns": [{ "include": "#keywords" }] },
+        "2": { "name": "punctuation.delimiter.peeper" },
+        "3": { "name": "keyword.operator.peeper" },
+        "4": { "patterns": [{ "include": "#type_prefix" }] },
+        "5": { "patterns": [{ "include": "#type_path" }] },
+        "6": { "patterns": [{ "include": "#type_name" }] }
+      }
+    },
+    "array_literal_type": {
+      "match": "(?<=\\])\\s*((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\{)",
+      "captures": {
+        "1": { "patterns": [{ "include": "#type_path" }] },
+        "2": { "patterns": [{ "include": "#type_name" }] }
+      }
+    },
+    "type_prefix": {
+      "patterns": [
+        { "include": "#keywords" },
+        { "include": "#number" },
+        { "include": "#operators" },
+        { "include": "#punctuation" }
+      ]
+    },
+    "type_path": {
+      "patterns": [
+        { "include": "#scoped_identifier" },
+        { "include": "#operators" }
+      ]
+    },
+    "type_name": {
+      "patterns": [
+        { "include": "#keywords" },
+        { "include": "#builtin_types" },
+        { "match": "[A-Za-z_][A-Za-z0-9_]*", "name": "entity.name.type.peeper" }
+      ]
+    },
     "type_declaration": {
-      "match": "\\b(struct|enum|union|error|iface|type)\\s+([A-Z][A-Za-z0-9_]*)\\b",
+      "match": "\\b(struct|enum|union|error|iface|type)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
       "captures": {
         "1": { "name": "keyword.control.peeper" },
         "2": { "name": "entity.name.type.peeper" }
