@@ -170,10 +170,12 @@
       }
     },
     "function_declaration": {
-      "match": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
+      "match": "\\b(fn)\\s+(?:([A-Za-z_][A-Za-z0-9_]*)\\s*(::)\\s*)?([A-Za-z_][A-Za-z0-9_]*)\\b",
       "captures": {
         "1": { "name": "keyword.control.peeper" },
-        "2": { "name": "entity.name.function.peeper" }
+        "2": { "name": "entity.name.type.peeper" },
+        "3": { "name": "keyword.operator.peeper" },
+        "4": { "name": "entity.name.function.peeper" }
       }
     },
     "struct_literal_type": {
