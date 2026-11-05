@@ -68,7 +68,11 @@ const cases = [
   ['fn f(x: [3]i32, y: &bool) {}', [['i32', builtin], ['bool', builtin], ['3', 'constant.numeric.dec.peeper']]],
   ['fn f(values: range[i32]) -> range[u8] {}', [['range', type], ['i32', builtin], ['u8', builtin]]],
   ['fn apply(callback: fn(_: Point, x: i32)) {}', [['fn', 'keyword.control.peeper'], ['Point', type], ['i32', builtin], ['callback', plain]]],
-  ['fn f(self: &Self) {}', [['self', 'variable.language.self.peeper'], ['Self', builtin]]],
+  // A type's functions: the owner is a type; `self` takes no type.
+  ['fn Point::Sum(&self) -> i32 {}', [['Point', type], ['::', operator], ['Sum', 'entity.name.function.peeper'], ['self', 'variable.language.self.peeper'], ['i32', builtin]]],
+  ['fn Point::Shift(&mut self, by: i32) {}', [['mut', 'keyword.control.peeper'], ['self', 'variable.language.self.peeper'], ['by', plain], ['i32', builtin]]],
+  ['fn Point::Grow(mut self) -> Point { return self; }', [['Grow', 'entity.name.function.peeper'], ['self', 'variable.language.self.peeper']]],
+  ['return self.x + p.y;', [['self', 'variable.language.self.peeper'], ['x', plain]]],
   ['type Origin = Point;', [['type', 'keyword.control.peeper'], ['Origin', type], ['=', operator], ['Point', type]]],
   ['type Size = [3]i32;', [['Size', type], ['i32', builtin]]],
   ['struct point { x: i32 }', [['point', type]]],
