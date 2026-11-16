@@ -13,6 +13,7 @@
     { "include": "#type_alias" },
     { "include": "#type_declaration" },
     { "include": "#function_declaration" },
+    { "include": "#where_clause" },
     { "include": "#type_annotation" },
     { "include": "#array_literal_type" },
     { "include": "#keywords" },
@@ -95,7 +96,7 @@
     "keywords": {
       "patterns": [
         {
-          "match": "\\b(import|type|fn|struct|enum|union|error|if|else|match|for|break|continue|return|catch|orelse|as|defer|panic|unsafe|const|let|mut|in|is|with|comptime|move|iface|from)\\b",
+          "match": "\\b(import|type|fn|struct|enum|union|error|if|else|match|for|break|continue|return|catch|orelse|as|defer|panic|unsafe|const|let|mut|in|is|with|comptime|move|iface|from|where)\\b",
           "name": "keyword.control.peeper"
         },
         {
@@ -123,8 +124,38 @@
         "6": { "patterns": [{ "include": "#type_name" }] }
       }
     },
+    "where_clause": {
+      "comment": "where T: Shape, T: Sized(8): an interface is a type; with arguments, a function.",
+      "begin": "\\b(where)\\b",
+      "beginCaptures": { "1": { "name": "keyword.control.peeper" } },
+      "end": "(?=[{;])",
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)\\s*((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+          "captures": {
+            "1": { "name": "entity.name.type.peeper" },
+            "2": { "name": "punctuation.delimiter.peeper" },
+            "3": { "patterns": [{ "include": "#type_path" }] },
+            "4": { "name": "entity.name.function.call.peeper" }
+          }
+        },
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)\\s*((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "entity.name.type.peeper" },
+            "2": { "name": "punctuation.delimiter.peeper" },
+            "3": { "patterns": [{ "include": "#type_path" }] },
+            "4": { "patterns": [{ "include": "#type_name" }] }
+          }
+        },
+        { "include": "#number" },
+        { "include": "#string" },
+        { "include": "#operators" },
+        { "include": "#punctuation" }
+      ]
+    },
     "type_annotation": {
-      "match": "(?:(?<![\\w.+\\-*/%&|^<>=!])(?<![.+\\-*/%&|^<>=!]\\s)(?<!\\bas\\s)([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)|(->))\\s*((?:&\\s*(?:mut\\b\\s*)?|\\*\\s*|\\[[^\\]\\n]*\\]\\s*)*)((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
+      "match": "(?:(?<![\\w.+\\-*/%&|^<>=!])(?<![.+\\-*/%&|^<>=!]\\s)(?<!\\bas\\s)([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)|(->))\\s*((?:&\\s*(?:mut\\b\\s*)?|\\*\\s*|\\[[^\\]\\n]*\\]\\s*|\\$)*)((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
       "captures": {
         "1": { "patterns": [{ "include": "#keywords" }] },
         "2": { "name": "punctuation.delimiter.peeper" },
@@ -202,7 +233,7 @@
       }
     },
     "operators": {
-      "match": "\\+=|-=|\\*=|/=|%=|==|!=|<<|>>|<=|>=|&&|\\|\\||\\|>|::|\\.\\.\\.?=?|=>|[=!\\?@&+\\-*/%<>^|~]",
+      "match": "\\+=|-=|\\*=|/=|%=|==|!=|<<|>>|<=|>=|&&|\\|\\||\\|>|::|\\.\\.\\.?=?|=>|[=!\\?@&+\\-*/%<>^|~$]",
       "name": "keyword.operator.peeper"
     },
     "punctuation": {
