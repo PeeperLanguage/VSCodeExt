@@ -67,6 +67,10 @@ const cases = [
   ['fn f(x: i64) -> i32 {}', [['i64', builtin], ['i32', builtin]]],
   ['fn f(x: [3]i32, y: &bool) {}', [['i32', builtin], ['bool', builtin], ['3', 'constant.numeric.dec.peeper']]],
   ['fn f(values: range[i32]) -> range[u8] {}', [['range', type], ['i32', builtin], ['u8', builtin]]],
+  // A type parameter, `$T`, and a function's condition.
+  ['fn f(a: $T, b: T) -> T where T: Shape {}', [['a', plain], ['$', operator], ['T', type], ['where', 'keyword.control.peeper'], ['Shape', type]]],
+  ['fn f() where T: Sized(8), N: math::Positive {}', [['T', type], ['Sized', 'entity.name.function.call.peeper'], ['8', 'constant.numeric.dec.peeper'], ['N', type], ['Positive', type]]],
+  ['fn f(list: &[]$T, at: *$U) {}', [['&', operator], ['$', operator], ['T', type], ['U', type]]],
   ['fn apply(callback: fn(_: Point, x: i32)) {}', [['fn', 'keyword.control.peeper'], ['Point', type], ['i32', builtin], ['callback', plain]]],
   // A type's functions: the owner is a type; `self` takes no type.
   ['fn Point::Sum(&self) -> i32 {}', [['Point', type], ['::', operator], ['Sum', 'entity.name.function.peeper'], ['self', 'variable.language.self.peeper'], ['i32', builtin]]],
