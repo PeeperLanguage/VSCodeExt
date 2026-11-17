@@ -26,12 +26,14 @@ const cases = [
   ['p.* = @x', [['.', delimiter], ['*', operator], ['@', operator]]],
   ['fn f(p: rawptr i32) -> rawptr cstr {}', [['rawptr', builtin], ['i32', builtin], ['cstr', builtin]]],
   ['Point.{ x = 1 }', [['Point', type], ['.', delimiter], ['{', bracket], ['=', operator]]],
-  ['Box<i32>.{ value = 1 }', [['Box', type], ['i32', builtin], ['<', operator], ['>', operator]]],
+  ['Box::<i32>.{ value = 1 }', [['Box', type], ['i32', builtin], ['<', operator], ['>', operator]]],
+  // Without `::`, `<` compares: no type there.
+  ['Box<i32>.{}', [['Box', plain]]],
   ['pkg::Point.{}', [['pkg', type], ['Point', type], ['::', operator]]],
   ['Pkg::Point.{}', [['Pkg', type], ['Point', type], ['::', operator]]],
-  ['Outer<i32>::Inner<Point>.{}', [['Outer', type], ['i32', builtin], ['Inner', type], ['Point', type], ['::', operator]]],
-  ['pkg :: Outer<Box<i32>> :: Inner<Point>.{}', [['pkg', type], ['Outer', type], ['Box', type], ['Inner', type], ['Point', type], ['::', operator]]],
-  ['pkg::Box<other::Box<i32>>.{}', [['pkg', type], ['Box', type], ['other', type], ['i32', builtin]]],
+  ['Outer::<i32>::Inner::<Point>.{}', [['Outer', type], ['i32', builtin], ['Inner', type], ['Point', type], ['::', operator]]],
+  ['pkg :: Outer::<Box<i32>> :: Inner::<Point>.{}', [['pkg', type], ['Outer', type], ['Box', type], ['Inner', type], ['Point', type], ['::', operator]]],
+  ['pkg::Box::<other::Box<i32>>.{}', [['pkg', type], ['Box', type], ['other', type], ['i32', builtin]]],
   ['Outer.{ child = Inner.{ x = 1 }, inferred = .{} }', [['Outer', type], ['Inner', type], ['child', 'source.peeper'], ['inferred', 'source.peeper']]],
   ['.{}', [['.', delimiter], ['{', bracket], ['}', bracket]]],
   ['point.{}', [['point', type]]],
@@ -40,14 +42,14 @@ const cases = [
   ['.Box<i32>{ value = 1 }', [['Box', 'source.peeper']]],
   ['.pkg::Point{}', [['Point', 'source.peeper']]],
   ['.Point.{}', [['Point', 'source.peeper']]],
-  ['Box<Box<i32>>.{}', [['Box', type], ['i32', builtin]]],
+  ['Box::<Box<i32>>.{}', [['Box', type], ['i32', builtin]]],
   ['Outer.{ child = .{ x = 1 } }', [['Outer', type], ['child', 'source.peeper'], ['=', operator]]],
   ['Point { x = 1 }', [['Point', 'source.peeper']]],
   ['value.field', [['field', 'source.peeper']]],
   ['left < right > other', [['left', 'source.peeper'], ['right', 'source.peeper']]],
   ['// Point.{}', [['Point', 'comment.line.double-slash.peeper']]],
   ['"Point.{}"', [['Point', 'string.quoted.double.peeper']]],
-  ['/* Box<i32>.{} */', [['Box', 'comment.block.peeper']]],
+  ['/* Box::<i32>.{} */', [['Box', 'comment.block.peeper']]],
   ['struct Point { x: i32 }', [['Point', type], ['struct', 'keyword.control.peeper'], ['i32', builtin]]],
   ['fn main() { call() }', [['main', 'entity.name.function.peeper'], ['call', 'entity.name.function.call.peeper']]],
   ['let count = maybe orelse 0;', [['let', 'keyword.control.peeper'], ['orelse', 'keyword.control.peeper'], ['maybe', 'source.peeper']]],
@@ -67,10 +69,19 @@ const cases = [
   ['fn f(x: i64) -> i32 {}', [['i64', builtin], ['i32', builtin]]],
   ['fn f(x: [3]i32, y: &bool) {}', [['i32', builtin], ['bool', builtin], ['3', 'constant.numeric.dec.peeper']]],
   ['fn f(values: range[i32]) -> range[u8] {}', [['range', type], ['i32', builtin], ['u8', builtin]]],
-  // A type parameter, `$T`, and a function's condition.
-  ['fn f(a: $T, b: T) -> T where T: Shape {}', [['a', plain], ['$', operator], ['T', type], ['where', 'keyword.control.peeper'], ['Shape', type]]],
+  // Type parameters and a function's constraints.
+  ['fn f<T>(a: T, b: T) -> T where T: Shape {}', [['a', plain], ['T', type], ['where', 'keyword.control.peeper'], ['Shape', type]]],
   ['fn f() where T: Sized(8), N: math::Positive {}', [['T', type], ['Sized', 'entity.name.function.call.peeper'], ['8', 'constant.numeric.dec.peeper'], ['N', type], ['Positive', type]]],
-  ['fn f(list: &[]$T, at: *$U) {}', [['&', operator], ['$', operator], ['T', type], ['U', type]]],
+  ['fn f(list: &[]T, at: *U) {}', [['&', operator], ['T', type], ['U', type]]],
+  // A call, with the types it is given after `::`; without `::`, `<` and `>` compare.
+  ['let a = Max::<f64>(1, 2.5);', [['Max', 'entity.name.function.call.peeper'], ['f64', builtin], ['<', operator]]],
+  ['list::Sum::<u8, &mut [3]Point>();', [['Sum', 'entity.name.function.call.peeper'], ['u8', builtin], ['Point', type]]],
+  ['if big < 10 && big > (2) {}', [['big', plain], ['10', 'constant.numeric.dec.peeper']]],
+  ['let x = a < b == c > (d);', [['a', plain]]],
+  ['f(a < b, c > (d));', [['a', plain], ['b', plain]]],
+  ['Max<f64>(1);', [['Max', plain]]],
+  ['Largest(1, 2)', [['Largest', 'entity.name.function.call.peeper']]],
+  ['fn Point::Max<T, U>(a: T) {}', [['Max', 'entity.name.function.peeper'], ['T', type], ['U', type]]],
   ['fn apply(callback: fn(_: Point, x: i32)) {}', [['fn', 'keyword.control.peeper'], ['Point', type], ['i32', builtin], ['callback', plain]]],
   // A type's functions: the owner is a type; `self` takes no type.
   ['fn Point::Sum(&self) -> i32 {}', [['Point', type], ['::', operator], ['Sum', 'entity.name.function.peeper'], ['self', 'variable.language.self.peeper'], ['i32', builtin]]],
@@ -116,7 +127,7 @@ console.log(`${cases.length} grammar regression cases passed`);
 
 const text = process.argv[2]
   ? await readFile(process.argv[2], 'utf8')
-  : 'Outer.{\n child = Box<i32>.{\n value = 1\n },\n inferred = .{}\n}\nfn after() {}';
+  : 'Outer.{\n child = Box::<i32>.{\n value = 1\n },\n inferred = .{}\n}\nfn after() {}';
 let ruleStack = tm.INITIAL;
 const counts = {};
 for (const line of text.split('\n')) {

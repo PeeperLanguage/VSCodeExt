@@ -155,7 +155,7 @@
       ]
     },
     "type_annotation": {
-      "match": "(?:(?<![\\w.+\\-*/%&|^<>=!])(?<![.+\\-*/%&|^<>=!]\\s)(?<!\\bas\\s)([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)|(->))\\s*((?:&\\s*(?:mut\\b\\s*)?|\\*\\s*|\\[[^\\]\\n]*\\]\\s*|\\$)*)((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
+      "match": "(?:(?<![\\w.+\\-*/%&|^<>=!])(?<![.+\\-*/%&|^<>=!]\\s)(?<!\\bas\\s)([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)|(->))\\s*((?:&\\s*(?:mut\\b\\s*)?|\\*\\s*|\\[[^\\]\\n]*\\]\\s*)*)((?:[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)*)([A-Za-z_][A-Za-z0-9_]*)",
       "captures": {
         "1": { "patterns": [{ "include": "#keywords" }] },
         "2": { "name": "punctuation.delimiter.peeper" },
@@ -201,16 +201,23 @@
       }
     },
     "function_declaration": {
-      "match": "\\b(fn)\\s+(?:([A-Za-z_][A-Za-z0-9_]*)\\s*(::)\\s*)?([A-Za-z_][A-Za-z0-9_]*)\\b",
+      "match": "\\b(fn)\\s+(?:([A-Za-z_][A-Za-z0-9_]*)\\s*(::)\\s*)?([A-Za-z_][A-Za-z0-9_]*)\\b(?:\\s*(<[^<>\\n]*>))?",
       "captures": {
         "1": { "name": "keyword.control.peeper" },
         "2": { "name": "entity.name.type.peeper" },
         "3": { "name": "keyword.operator.peeper" },
-        "4": { "name": "entity.name.function.peeper" }
+        "4": { "name": "entity.name.function.peeper" },
+        "5": {
+          "patterns": [
+            { "match": "[A-Za-z_][A-Za-z0-9_]*", "name": "entity.name.type.peeper" },
+            { "include": "#operators" },
+            { "include": "#punctuation" }
+          ]
+        }
       }
     },
     "struct_literal_type": {
-      "match": "(?<![\\w.])\\b([A-Za-z_][A-Za-z0-9_]*(?:\\s*(?<generic><(?:[^<>\\n]|\\g<generic>)*>))?(?:\\s*::\\s*[A-Za-z_][A-Za-z0-9_]*(?:\\s*\\g<generic>)?)*)(?=\\s*\\.\\s*\\{)",
+      "match": "(?<![\\w.])\\b([A-Za-z_][A-Za-z0-9_]*(?:\\s*::\\s*(?<generic><(?:[^<>\\n]|\\g<generic>)*>))?(?:\\s*::\\s*[A-Za-z_][A-Za-z0-9_]*(?:\\s*::\\s*\\g<generic>)?)*)(?=\\s*\\.\\s*\\{)",
       "captures": {
         "1": {
           "patterns": [
@@ -223,8 +230,20 @@
       }
     },
     "function_call": {
-      "match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(?=\\()",
-      "name": "entity.name.function.call.peeper"
+      "comment": "f(x) or f::<T>(x): in an expression, type arguments follow `::`; a `<` after a name compares.",
+      "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(::\\s*(?<arguments><(?:[^<>\\n]|\\g<arguments>)*>))?\\s*(?=\\()",
+      "captures": {
+        "1": { "name": "entity.name.function.call.peeper" },
+        "2": {
+          "patterns": [
+            { "include": "#builtin_types" },
+            { "include": "#type_name" },
+            { "include": "#number" },
+            { "include": "#operators" },
+            { "include": "#punctuation" }
+          ]
+        }
+      }
     },
     "scoped_identifier": {
       "match": "\\b([A-Z][A-Za-z0-9_]*)::",
@@ -233,7 +252,7 @@
       }
     },
     "operators": {
-      "match": "\\+=|-=|\\*=|/=|%=|==|!=|<<|>>|<=|>=|&&|\\|\\||\\|>|::|\\.\\.\\.?=?|=>|[=!\\?@&+\\-*/%<>^|~$]",
+      "match": "\\+=|-=|\\*=|/=|%=|==|!=|<<|>>|<=|>=|&&|\\|\\||\\|>|::|\\.\\.\\.?=?|=>|[=!\\?@&+\\-*/%<>^|~]",
       "name": "keyword.operator.peeper"
     },
     "punctuation": {
